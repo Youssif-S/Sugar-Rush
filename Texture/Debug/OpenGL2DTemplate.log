@@ -1,0 +1,9 @@
+﻿  texture.cpp
+C:\Users\modym\Downloads\GUC_312_67_58113_2025-10-13T10_04_44 (1)\TextureBuilder.h(27,57): warning C4244: 'argument': conversion from 'int' to 'GLfloat', possible loss of data
+  (compiling source file 'texture.cpp')
+  
+C:\Users\modym\Downloads\GUC_312_67_58113_2025-10-13T10_04_44 (1)\TextureBuilder.h(28,57): warning C4244: 'argument': conversion from 'int' to 'GLfloat', possible loss of data
+  (compiling source file 'texture.cpp')
+  
+texture.obj : warning LNK4075: ignoring '/EDITANDCONTINUE' due to '/INCREMENTAL:NO' specification
+  OpenGL2DTemplate.vcxproj -> C:\Users\modym\Downloads\GUC_312_67_58113_2025-10-13T10_04_44 (1)\Debug\Texture.exe

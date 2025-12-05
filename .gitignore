@@ -1,0 +1,12 @@
+.vs/
+Debug/
+*.tlog
+*.log
+*.obj
+*.idb
+*.pdb
+*.user
+*.suo
+*.opensdf
+*.sdf
+ipch/

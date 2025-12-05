@@ -1,0 +1,1 @@
+Place your texture and asset files (e.g., box.bmp, metal.bmp, clouds.ppm, volume.rgb) in this folder.
