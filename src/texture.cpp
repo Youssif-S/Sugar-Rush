@@ -1738,14 +1738,22 @@ render:
         glDisable(GL_DEPTH_TEST);
         
         char winStr[64];
-        sprintf(winStr, "YOU WON LEVEL %d!", level);
+        if (level == 2) {
+            sprintf(winStr, "YOU WON THE GAME!");
+        } else {
+            sprintf(winStr, "YOU WON LEVEL %d!", level);
+        }
         drawText(400, 450, winStr, GLUT_BITMAP_TIMES_ROMAN_24);
         
         char scoreMsg[64];
         sprintf(scoreMsg, "Score: %d", score); 
         drawText(380, 400, scoreMsg, GLUT_BITMAP_TIMES_ROMAN_24);
         
-        drawText(330, 350, "Press ENTER to enter the next level", GLUT_BITMAP_TIMES_ROMAN_24);
+        if (level == 2) {
+            drawText(330, 350, "Press ENTER to restart", GLUT_BITMAP_TIMES_ROMAN_24);
+        } else {
+            drawText(330, 350, "Press ENTER to enter the next level", GLUT_BITMAP_TIMES_ROMAN_24);
+        }
         
         glEnable(GL_DEPTH_TEST);
         glEnable(GL_LIGHTING);
@@ -2063,7 +2071,10 @@ void Timer(int value) {
 void Keyboard(unsigned char key, int x, int y) {
     if (gameOver || levelWon) {
         if (key == 13) { // Enter Key
-            if (levelWon) level++; // Increment level (though we just restart for now)
+            if (levelWon) {
+                if (level == 2) level = 1; // Restart game after level 2
+                else level++; // Go to next level
+            }
             
             // Reset Game State
             gameOver = false;
