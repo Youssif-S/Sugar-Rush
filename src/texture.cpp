@@ -29,6 +29,9 @@ static GLuint snowTexture = 0; // Snow ground texture for level 2
 static GLuint gumballTexture = 0; // Gumball machine texture for level 2
 static GLuint cakePopTexture = 0; // Cake pop texture for level 2
 static GLuint skyTexture = 0; // Sky texture
+static GLuint finishLineTexture = 0; // Finish line texture
+static GLuint gummyTexture = 0; // Gummy bear texture
+static GLuint candyCaneTexture = 0; // Candy cane texture
 
 // Nearest-neighbor resize from src(w*h*3 BGR) to dst(newW*newH*3)
 // This function resizes image data to a power of 2 (e.g., 512x512) which is often required by older OpenGL versions
@@ -536,19 +539,37 @@ void drawStreet() {
         
         glTranslatef(0, 1.0f + bounce, FINISH_LINE_Z); 
         
-        // Hologram Color (Cyan with transparency)
-        glColor4f(0.0f, 1.0f, 1.0f, 0.6f); 
+        glScalef(28.0f, 4.0f, 1.0f); // Standing up like a gate
         
-        glScalef(28.0f, 2.0f, 1.0f); // Standing up like a gate/hologram
-        
-        // Draw simple quad for the hologram plane
-        glBegin(GL_QUADS);
-        glNormal3f(0, 0, 1);
-        glVertex3f(-1, -1, 0);
-        glVertex3f(1, -1, 0);
-        glVertex3f(1, 1, 0);
-        glVertex3f(-1, 1, 0);
-        glEnd();
+        if (finishLineTexture != 0) {
+            // Apply finish line texture
+            glDisable(GL_LIGHTING);
+            glEnable(GL_TEXTURE_2D);
+            glBindTexture(GL_TEXTURE_2D, finishLineTexture);
+            glColor3f(1.0f, 1.0f, 1.0f);
+            
+            glBegin(GL_QUADS);
+            glNormal3f(0, 0, 1);
+            glTexCoord2f(0.0f, 0.0f); glVertex3f(-1, -1, 0);
+            glTexCoord2f(5.0f, 0.0f); glVertex3f(1, -1, 0);
+            glTexCoord2f(5.0f, 1.0f); glVertex3f(1, 1, 0);
+            glTexCoord2f(0.0f, 1.0f); glVertex3f(-1, 1, 0);
+            glEnd();
+            
+            glDisable(GL_TEXTURE_2D);
+            glEnable(GL_LIGHTING);
+        } else {
+            // Fallback: Hologram Color (Cyan with transparency)
+            glColor4f(0.0f, 1.0f, 1.0f, 0.6f); 
+            
+            glBegin(GL_QUADS);
+            glNormal3f(0, 0, 1);
+            glVertex3f(-1, -1, 0);
+            glVertex3f(1, -1, 0);
+            glVertex3f(1, 1, 0);
+            glVertex3f(-1, 1, 0);
+            glEnd();
+        }
         
         glDisable(GL_BLEND);
         glPopMatrix();
@@ -933,13 +954,36 @@ void drawEnvironment() {
                     glTranslatef(gummy.x, 1.0f + gummy.bobbingOffset, gummy.z); // Hovering
                     glScalef(0.5f, 0.5f, 0.5f); // Appropriate size
                     
-                    // Set green color
-                    glColor3f(0.2f, 0.9f, 0.2f);
-                    
-                    if (gummyDisplayList != 0) {
-                        glCallList(gummyDisplayList);
+                    if (gummyTexture != 0) {
+                        // Apply gummy texture with spherical mapping
+                        glEnable(GL_TEXTURE_2D);
+                        glBindTexture(GL_TEXTURE_2D, gummyTexture);
+                        glColor3f(1.0f, 1.0f, 1.0f);
+                        
+                        // Use spherical texture coordinate generation
+                        glEnable(GL_TEXTURE_GEN_S);
+                        glEnable(GL_TEXTURE_GEN_T);
+                        glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+                        glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+                        
+                        if (gummyDisplayList != 0) {
+                            glCallList(gummyDisplayList);
+                        } else {
+                            gummyModel.Draw();
+                        }
+                        
+                        glDisable(GL_TEXTURE_GEN_S);
+                        glDisable(GL_TEXTURE_GEN_T);
+                        glDisable(GL_TEXTURE_2D);
                     } else {
-                        gummyModel.Draw();
+                        // Fallback: green color
+                        glColor3f(0.2f, 0.9f, 0.2f);
+                        
+                        if (gummyDisplayList != 0) {
+                            glCallList(gummyDisplayList);
+                        } else {
+                            gummyModel.Draw();
+                        }
                     }
                     glPopMatrix();
                 }
@@ -957,8 +1001,29 @@ void drawEnvironment() {
                     glTranslatef(candy.x, 1.0f + candy.bobbingOffset, candy.z); // Hovering
                     glRotatef(90, 0, 0, 1);
                     glScalef(0.5f, 0.5f, 0.5f);
-                    glColor3f(1.0f, 0.2f, 0.2f);
-                    if (candyCaneDisplayList != 0) { glCallList(candyCaneDisplayList); } else { candyCaneModel.Draw(); }
+                    
+                    if (candyCaneTexture != 0) {
+                        // Apply candy cane texture with spherical mapping
+                        glEnable(GL_TEXTURE_2D);
+                        glBindTexture(GL_TEXTURE_2D, candyCaneTexture);
+                        glColor3f(1.0f, 1.0f, 1.0f);
+                        
+                        glEnable(GL_TEXTURE_GEN_S);
+                        glEnable(GL_TEXTURE_GEN_T);
+                        glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+                        glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+                        
+                        if (candyCaneDisplayList != 0) { glCallList(candyCaneDisplayList); } else { candyCaneModel.Draw(); }
+                        
+                        glDisable(GL_TEXTURE_GEN_S);
+                        glDisable(GL_TEXTURE_GEN_T);
+                        glDisable(GL_TEXTURE_2D);
+                    } else {
+                        // Fallback: red color
+                        glColor3f(1.0f, 0.2f, 0.2f);
+                        if (candyCaneDisplayList != 0) { glCallList(candyCaneDisplayList); } else { candyCaneModel.Draw(); }
+                    }
+                    
                     glPopMatrix();
                 }
             }
@@ -1409,6 +1474,30 @@ void Init() {
         printf("Sky texture load failed: textures/clouds-sky-vertical-shot.bmp\n");
     } else {
         printf("Sky texture loaded. Texture ID: %u\n", skyTexture);
+    }
+
+    // Load finish line texture
+    finishLineTexture = LoadBMPAndCreateGLTexture("textures/finish_line_texture.bmp");
+    if (finishLineTexture == 0) {
+        printf("Finish line texture load failed: textures/finish_line_texture.bmp\n");
+    } else {
+        printf("Finish line texture loaded. Texture ID: %u\n", finishLineTexture);
+    }
+
+    // Load gummy texture
+    gummyTexture = LoadBMPAndCreateGLTexture("textures/gummy_bear.bmp");
+    if (gummyTexture == 0) {
+        printf("Gummy texture load failed: textures/gummy_bear.bmp\n");
+    } else {
+        printf("Gummy texture loaded. Texture ID: %u\n", gummyTexture);
+    }
+
+    // Load candy cane texture
+    candyCaneTexture = LoadBMPAndCreateGLTexture("textures/candy_cane_texture.bmp");
+    if (candyCaneTexture == 0) {
+        printf("Candy cane texture load failed: textures/candy_cane_texture.bmp\n");
+    } else {
+        printf("Candy cane texture loaded. Texture ID: %u\n", candyCaneTexture);
     }
 }
 
